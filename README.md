@@ -3,49 +3,29 @@ The single molecule real-time sequencing technologies, such as PacBio and Nanopo
 However, compared with the second-generation sequencing data, the PacBio data lacks paired-end sequencing information, making traditional structure variations filter fail to process the new data. To solve this problem, this paper proposes a universal multi-tasking structure variation filtering model MSVF.
 MSVF adopts the CIGAR string defined in SAM format. CIGAR is not limited by sequencing technology or alignment algorithms, so MSVF is suitable for not only the second-generation but also the third-generation sequencing data. Moreover, CIGAR string preserves the complete sequence alignment information, which makes MSVF a highly precise model.
 Besides, MSVF uses deep learning methods, making it supports more structure variation types, including deletion and insertion.
-We trained and tested the models on the open-access NCBI datasets. The experiments proved that ShuffleNet, MobileNet, ResNet transfer learning models achieve better classification results on SVs task. 
-# Data description
-
-| File name  | Description |
-| ------------- | ------------- |
-| Uniprot_ARG.fasta  | Antibiotic resistance genes in the UNIPROT database were used for model training and validation  |
-| Uniprot_ARG_ind.fasta  | Independent antibiotic resistance genes in the UNIPROT database  |
-| Uniprot_VF.fasta  | Virulence factors in the UNIPROT database were used for model training and validation  |
-| Uniprot_VF_ind.fasta| Independent virulence factors in the UNIPROT database |
-| Uniprot_NS.fasta| Negative genes (neither VFs nor ARGs) in the UNIPROT database were used for model training and validation| 
-| Uniprot_NS_ind.fasta|  Independent negative genes (neither VFs nor ARGs) in the UNIPROT database| 
-| Uniprot_ARG+VF+NS.fasta|  Total of 3 types of genes in the UNIPROT database were used for model training and validation| 
-| Label_ARG+VF+NS.csv|  Label of 3 types of genes in the UNIPROT database were used for model training and validation| 
-| Database_GENE.zip| The remaining database genes were used as known ARGs and VFs| 
+We trained and tested the models on the open-access NCBI datasets. The experiments proved that ShuffleNet, MobileNet, ResNet transfer learning models achieve better classification results on SVs task.
 
 # Requirements
-HyperVR is tested to work under:
+MSVF is tested to work under:
 
-Python 3.8
+Python 3.6
 
-Tensorflow 2.8.0
+pytorch 1.10.2
 
-Keras 2.8.0
+pysam 0.15.4
 
-numpy 1.21.2
+numpy 1.19.5
 
-sklearn 1.1.1
+scikit-learn 0.19.2
 
-Xgboost 1.5.2
+torchvision 0.11.3
+
+tensorboard 2.8.0
 
 # Quick start
 To reproduce our results:
 
-1, Download uniref dataset and install the required toolkit
-```
-cd tools/ncbi-blast && wget -c https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/ncbi-blast-2.13.0+-x64-linux.tar.gz && tar -zxvf ncbi-blast-2.13.0+-x64-linux.tar.gz
-
-cd tools/diamond && wget -c https://github.com/bbuchfink/diamond/releases/download/v2.0.5/diamond-linux64.tar.gz && tar -zxvf diamond-linux64.tar.gz 
-
-cd tools/uniref50 && wget -c https://ftp.uniprot.org/pub/databases/uniprot/uniref/uniref50/uniref50.fasta.gz && tar -zxvf uniref50.fasta.gz
-
-/tools/ncbi-blast/ncbi-blast-2.13.0+/bin/makeblastdb -dbtype prot -in uniref50.fasta -input_type fasta -parse_seqids -out uniref50_blast
-```
+1, Download dataset from https://cowtransfer.com/s/cddf954624b247
 2, Run generate_pssm_profile.py to generate pssm profiles for each gene sequence, the options are:
 ```
 python src/generate_pssm_profile.py --file /data/Uniprot_ARG+VF+NS.fasta --blastpgp /tools/ncbi-blast/ncbi-blast-2.13.0+/bin --db /tools/uniref50/uniref50_blast --outdir /src/pssm_profile
@@ -91,7 +71,7 @@ python /src/HyperVR_cv/main.py --feature_path /src --label_path /data
 
 ```
 # License
-This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
+This source code is licensed under the GPL license found in the LICENSE file in the root directory of this source tree.
 
 # Contacts
-If you have any questions or comments, please feel free to email: byj@hnu.edu.cn.
+If you have any questions or comments, please feel free to email: wmxiang@hnu.edu.cn.
