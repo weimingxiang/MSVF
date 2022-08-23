@@ -9,6 +9,12 @@ from sklearn.metrics import auc, classification_report, roc_curve
 
 import torch
 from net import IDENet
+import sys
+
+
+if len(sys.argv) < 2:
+    print("usage error!")
+    exit()
 
 # os.environ["CUDA_VISIBLE_DEVICES"] = "3"
 seed_everything(2022)
@@ -16,23 +22,19 @@ seed_everything(2022)
 # data_dir = "../datasets/NA12878_PacBio_MtSinai/"
 root_dir = "../"
 
-hight = 224
-
 config = {
     "lr": 7.1873e-06,
     "batch_size": 118,  # 14,
     "beta1": 0.9,
     "beta2": 0.999,
     'weight_decay': 0.0011615,
+    'model': sys.argv[1]
 }
 
-# model = IDENet.load_from_checkpoint(
-#     root_dir + "models/" + model_name + "/epoch=32.ckpt", path=root_dir, config=config, map_location=torch.device('cpu'))
 
-model = IDENet.load_from_checkpoint(r"D:\workspace\new_work\SVs\BIBM\MSVF\models\mnasnet1_0.ckpt", path=root_dir, config=config, map_location=torch.device('cpu'))
+model = IDENet.load_from_checkpoint(root_dir + "models/" + config['model'] + ".ckpt", path=root_dir, config=config)
 
-# trainer = pl.Trainer(gpus=1)
-trainer = pl.Trainer()
+trainer = pl.Trainer(gpus=1)
 
 model.eval()
 result = trainer.test(model)
@@ -50,18 +52,14 @@ for out in output:
         elif ii == 1:
             y = torch.cat([y, torch.tensor([0, 1, 0]).unsqueeze(0)], 0)
         else:
-            # y[i] = 1
             y = torch.cat([y, torch.tensor([0, 0, 1]).unsqueeze(0)], 0)
     y_hat = torch.cat([y_hat, out['y_hat']], 0)
 
 
-# 加载数据
 y_test = y.cpu().numpy()
 y_score = y_hat.cpu().numpy()
-# 设置种类
 n_classes = y.shape[1]
 
-# 计算每一类的ROC
 fpr = dict()
 tpr = dict()
 roc_auc = dict()
@@ -69,12 +67,9 @@ for i in range(n_classes):
     fpr[i], tpr[i], _ = roc_curve(y_test[:, i], y_score[:, i])
     roc_auc[i] = auc(fpr[i], tpr[i])
 
-# Compute micro-average ROC curve and ROC area（方法二）
 fpr["micro"], tpr["micro"], _ = roc_curve(y_test.ravel(), y_score.ravel())
 roc_auc["micro"] = auc(fpr["micro"], tpr["micro"])
 
-# Compute macro-average ROC curve and ROC area（方法一）
-# First aggregate all false positive rates
 all_fpr = np.unique(np.concatenate([fpr[i] for i in range(n_classes)]))
 # Then interpolate all ROC curves at this points
 mean_tpr = np.zeros_like(all_fpr)
@@ -111,11 +106,9 @@ plt.xlabel('False Positive Rate')
 plt.ylabel('True Positive Rate')
 # plt.title('Some extension of Receiver operating characteristic to multi-class')
 plt.legend(loc="lower right")
-plt.savefig("resnet50.pdf", dpi=1000, bbox_inches='tight')
+# plt.savefig("resnet50.pdf", dpi=1000, bbox_inches='tight')
 plt.show()
 
-
-# metric = classification_report(torch.argmax(y.cpu(), dim = 1), torch.argmax(y_hat.cpu(), dim = 1), output_dict = True)
 
 print(classification_report(torch.argmax(y.cpu(), dim=1),
       torch.argmax(y_hat.cpu(), dim=1), digits=4))

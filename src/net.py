@@ -13,7 +13,7 @@ from torch.utils.data import DataLoader, Subset
 
 import utilities as ut
 
-model_name = "mnasnet1_0"
+model_name = "resnet50"
 # mnasnet1_0
 # resnet50
 class attention(nn.Module):
@@ -129,6 +129,7 @@ class IDENet(pl.LightningModule):
 
         self.weight_decay = config['weight_decay']
         self.batch_size = config["batch_size"]
+        model_name = config["model"]
 
         self.path = path
 

@@ -26,32 +26,27 @@ MSVF is tested to work under:
 
 # Quick start
 
-## Environment by using anaconda and pip
-```shell
-conda create -n MSVF python=3.6
-
-conda install pytorch torchvision torchaudio cudatoolkit -c pytorch -c conda-forge -y
-conda install pytorch-lightning=1.5.10 -c conda-forge -y
-pip install ray[tune] -i https://pypi.tuna.tsinghua.edu.cn/simple
-conda install redis -y
-conda install scikit-learn -y
-conda install matplotlib -y
-
-
-conda install -c conda-forge tensorboardx tensorboard==1.15 -y
-conda install scipy -y
-```
-
 ## Code and Data
 ```shell
 git clone git@github.com:weimingxiang/MSVF.git
 ```
 
-Download all dataset from https://cowtransfer.com/s/cddf954624b247.
+Download all dataset from https://cowtransfer.com/s/cddf954624b247. (You can also choose the sample data in the code)
 
+## Environment by using anaconda and pip
+```shell
+conda create -n MSVF python=3.6 -y
+conda activate MSVF
+conda install pytorch torchvision torchaudio cudatoolkit -c pytorch -y
+conda install pytorch-lightning=1.5.10 -c conda-forge -y
+pip install ray[tune] -i https://pypi.tuna.tsinghua.edu.cn/simple
+conda install redis -y
+conda install scikit-learn -y
+conda install matplotlib -y
+```
 
 ## Predict
-
+python predict.py selected_model
 
 # Usage
 # License

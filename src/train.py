@@ -59,6 +59,7 @@ def main_train():
         "beta1": 0.9,
         "beta2": 0.999,
         'weight_decay': 0.0011615,
+        'model': sys.argv[1]
         # "classfication_dim_stride": 20, # no use
     }
     # config = {
@@ -149,6 +150,7 @@ def gan_tune(num_samples=-1, num_epochs=40, gpus_per_trial=1):
         "beta1": 0.9, # tune.uniform(0.895, 0.905),
         "beta2": 0.999, # tune.uniform(0.9989, 0.9991),
         'weight_decay': tune.uniform(0, 0.01),
+        'model': sys.argv[1]
         # "conv2d_dim_stride": tune.lograndint(1, 6),
         # "classfication_dim_stride": tune.lograndint(20, 700),
     }
