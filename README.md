@@ -33,6 +33,17 @@ git clone git@github.com:weimingxiang/MSVF.git
 
 Download all dataset from https://cowtransfer.com/s/cddf954624b247. (You can also choose the sample data in the code)
 
+## Model that have been trained
+| File name  | URL |
+| ------------- | ------------- |
+| mnasnet1_0.ckpt  | https://github.com/weimingxiang/MSVF/releases/download/model/mnasnet1_0.ckpt  |
+| mobilenet_v2.ckpt  | https://github.com/weimingxiang/MSVF/releases/download/model/mobilenet_v2.ckpt  |
+| shufflenet_v2_x1_0.ckpt  | https://github.com/weimingxiang/MSVF/releases/download/model/shufflenet_v2_x1_0.ckpt  |
+| resnet34.ckpt  | https://github.com/weimingxiang/MSVF/releases/download/model/resnet34.ckpt  |
+| resnet50.ckpt  | https://github.com/weimingxiang/MSVF/releases/download/model/resnet50.ckpt  |
+| resnet101.ckpt  | https://github.com/weimingxiang/MSVF/releases/download/model/resnet101.ckpt  |
+| resnet152.ckpt  | https://github.com/weimingxiang/MSVF/releases/download/model/resnet152.ckpt  |
+
 ## Environment by using anaconda and pip
 ```shell
 conda create -n MSVF python=3.6 -y
@@ -49,6 +60,8 @@ conda install matplotlib -y
 python predict.py selected_model
 
 # Usage
+
+
 # License
 This source code is licensed under the GPL license found in the LICENSE file in the root directory of this source tree.
 
