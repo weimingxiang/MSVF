@@ -1,41 +1,16 @@
 
-#from __future__ import print_function
-import sys
+import codecs
+import csv
 import os
-import random
-from PIL import Image
+
 import numpy as np
-import argparse
-from glob import glob
-from bed2image import trans2img
 import torch
 import torchvision
-from multiprocessing import Pool, cpu_count
-import time
-import csv
-import codecs
+
+from bed2image import trans2img
 
 hight = 224
 resize = torchvision.transforms.Resize([hight, hight])
-
-# # 通过pos计算值
-# def pos2value(lis, pos):
-#     pos_float = pos - int(pos)
-#     x1 = lis[int(pos)] * (1 - pos_float)
-#     x2 = lis[int(pos) + 1] * pos_float
-#     return x1 + x2
-
-# #计算上下四分位数
-# #计算上下边缘
-# #计算中位数
-# def count_quartiles_median(lis):
-#     length = float(len(lis)) - 1
-#     q1 = length / 4
-#     q3 = length * 3 / 4
-#     q4 = q3 + 1.5 * (q3 - q1)
-#     q = q1 - 1.5 * (q3 - q1)
-#     q2 = length / 2  # 中位数
-#     return pos2value(lis, q), pos2value(lis, q1), pos2value(lis, q2), pos2value(lis, q3), pos2value(lis, q4)
 
 def data_write_csv(file_name, datas):#file_name为写入CSV文件的路径，datas为要写入数据列表
     file_csv = codecs.open(file_name,'w+','utf-8')#追加
@@ -50,19 +25,6 @@ def get_rms(records):
     均方根值 反映的是有效值而不是平均值
     """
     return np.sqrt(sum([x ** 2 for x in records]) / len(records))
-
-# def get_gm(records):
-#     """
-#     几何平均
-#     """
-#     return (np.prod(records)) ** (1 / len(records))
-
-# def get_hm(records):
-#     """
-#     调和平均
-#     """
-#     records = records
-#     return len(records) / sum([1 / x for x in records])
 
 def get_cv(records): #标准分和变异系数
     mean = np.mean(records)
@@ -101,32 +63,6 @@ def preprocess(bam_path, chromosome, chr_len, data_dir):
 
     return trans2img(bam_path, chromosome, chr_len, data_dir)
 
-# def to_input_image(imgs, rd_depth_mean, hight = 112):
-#     print("======= to input image begin =========")
-
-#     ims = torch.empty(len(imgs), 3, 224, 224)
-#     for i, img in enumerate(imgs):
-#         print("===== finish(to_input_image) " + str(i))
-#         img = img - rd_depth_mean + hight / 2
-#         img = torch.maximum(img, torch.tensor(0))
-
-#         pic_length = img.size()
-#         im = torch.zeros(3, pic_length[-1], hight)
-
-#         for x in range(pic_length[-1]):
-#             y = img[:, x].int()
-#             for j in range(pic_length[0]):
-#                 im[j, x, :y[j]] = 255
-#                 y_float = img[j, x] - y[j]
-#                 im[j, x, y[j]:y[j]+1] = torch.round(255 * y_float)
-
-
-#         im = resize(im)
-#         ims[i] = im
-#     print("======= to input image end =========")
-#     return ims
-
-
 def to_input_image_single(img): # todo
     # img = img - rd_depth_mean + hight / 2
     # img = torch.maximum(img, torch.tensor(0))
@@ -149,29 +85,22 @@ def to_input_image_single(img): # todo
 class IdentifyDataset(torch.utils.data.Dataset):
     def __init__(self, path):
 
-        self.insfile_list = os.listdir(path + "ins")
-        self.delfile_list = os.listdir(path + "del")
-
-        self.nfile_list = os.listdir(path + "n")
+        self.insfile_list = os.listdir(path + "data/ins")
+        self.delfile_list = os.listdir(path + "data/del")
+        self.nfile_list = os.listdir(path + "data/n")
         self.path = path
 
         self._len = len(self.insfile_list) + len(self.delfile_list) + len(self.nfile_list)
-        # self._len = len(self.insfile_list) + len(self.nfile_list)
-        # self._len = len(self.delfile_list) + len(self.nfile_list)
-
-
-
-
 
     def __len__(self):
         return self._len
 
     def __getitem__(self, index):
         if index < len(self.insfile_list):
-            return torch.load(self.path + "ins/" + self.insfile_list[index])
+            return torch.load(self.path + "data/ins/" + self.insfile_list[index])
         elif index < len(self.insfile_list) + len(self.delfile_list):
             index -= len(self.insfile_list)
-            return torch.load(self.path + "del/" + self.delfile_list[index])
+            return torch.load(self.path + "data/del/" + self.delfile_list[index])
         else:
             index -= len(self.insfile_list) + len(self.delfile_list)
             # index -= len(self.insfile_list)
@@ -179,7 +108,7 @@ class IdentifyDataset(torch.utils.data.Dataset):
 
             # random.seed(index)
             # index = random.randrange(0, len(self.nfile_list))
-            return torch.load(self.path + "n/" + self.nfile_list[index])
+            return torch.load(self.path + "data/n/" + self.nfile_list[index])
 
 
 
