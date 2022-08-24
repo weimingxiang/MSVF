@@ -62,11 +62,11 @@ python predict.py selected_model
 ```
 # Usage
 
-## easy to train
+## Easy to train
 ```
 python simple_train.py selected_model
 ```
-## train
+## Train
 ```
 wget https://ftp.ncbi.nlm.nih.gov/giab/ftp/data/NA12878/NA12878_PacBio_MtSinai/sorted_final_merged.bam
 parallel  samtools index ::: *.bam
