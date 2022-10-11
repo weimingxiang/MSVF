@@ -1,7 +1,5 @@
 import subprocess
 import os
-
-
 from utilities import mymkdir
 
 bam_name = "sorted_final_merged.bam"
