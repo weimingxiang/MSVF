@@ -259,7 +259,7 @@ for chromosome, chr_len in zip(chr_list, chr_length):
         # sam_file.close()
 
         save_path = data_dir + 'image/' + chromosome
-
+        ut.mymkdir(save_path)
         torch.save(ins_cigar_img, save_path + '/ins_cigar_new_img' + '.pt')
         torch.save(del_cigar_img, save_path + '/del_cigar_new_img' + '.pt')
         torch.save(negative_cigar_img, save_path + '/negative_cigar_new_img' + '.pt')
