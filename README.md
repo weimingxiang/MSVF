@@ -60,6 +60,7 @@ conda activate MSVF
 conda install pytorch torchvision torchaudio cudatoolkit -c pytorch -y
 conda install pytorch-lightning=1.5.10 -c conda-forge -y
 pip install ray[tune] -i https://pypi.tuna.tsinghua.edu.cn/simple
+pip install pysam=0.15.4
 conda install redis -y
 conda install scikit-learn -y
 conda install matplotlib -y
