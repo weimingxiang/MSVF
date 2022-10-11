@@ -70,12 +70,14 @@ conda install pudb -y
 ## Predict
 ```python
 python predict.py selected_model
+(python predict.py resnet50)
 ```
 # Usage
 
 ## Easy to train
 ```
 python simple_train.py selected_model
+(python simple_train.py resnet50)
 ```
 ## Train
 ```
