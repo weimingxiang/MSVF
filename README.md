@@ -54,6 +54,8 @@ pip install ray[tune] -i https://pypi.tuna.tsinghua.edu.cn/simple
 conda install redis -y
 conda install scikit-learn -y
 conda install matplotlib -y
+conda install samtools -y
+conda install pudb -y
 ```
 
 ## Predict
