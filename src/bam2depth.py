@@ -1,12 +1,12 @@
 import subprocess
 import os
-from train import data_dir
+
 
 from utilities import mymkdir
 
 bam_name = "sorted_final_merged.bam"
 output_file = "output.depth.txt"
-
+data_dir = "../data/"
 
 cmd = "samtools depth " + data_dir + bam_name + " > " + data_dir + output_file
 print(cmd)
