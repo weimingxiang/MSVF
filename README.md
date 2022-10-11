@@ -44,6 +44,15 @@ Download all dataset from https://cowtransfer.com/s/cddf954624b247. (You can als
 | resnet101.ckpt  | https://github.com/weimingxiang/MSVF/releases/download/model/resnet101.ckpt  |
 | resnet152.ckpt  | https://github.com/weimingxiang/MSVF/releases/download/model/resnet152.ckpt  |
 
+## Add channels
+'''
+conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/
+conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main/
+conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/conda-forge/
+conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/msys2/
+conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/pytorch/
+'''
+
 ## Environment by using anaconda and pip
 ```shell
 conda create -n MSVF python=3.6 -y
