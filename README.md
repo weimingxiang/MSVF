@@ -64,7 +64,7 @@ conda install redis -y
 conda install scikit-learn -y
 conda install matplotlib -y
 conda install samtools -y
-conda install pudb -y
+conda install samtools -c bioconda -y
 ```
 
 ## Predict
