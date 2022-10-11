@@ -80,7 +80,7 @@ python simple_train.py selected_model
 ## Train
 ```
 wget https://ftp.ncbi.nlm.nih.gov/giab/ftp/data/NA12878/NA12878_PacBio_MtSinai/sorted_final_merged.bam
-parallel  samtools index ::: *.bam
+parallel samtools index ::: *.bam
 wget https://ftp.ncbi.nlm.nih.gov/giab/ftp/data/NA12878/NA12878_PacBio_MtSinai/NA12878.sorted.vcf.gz
 tar -xzvf NA12878.sorted.vcf.gz
 python vcf_data_process.py
