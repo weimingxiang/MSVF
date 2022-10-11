@@ -1,7 +1,7 @@
 import pandas as pd
 import re
 
-data_dir = "../"
+data_dir = "../data/"
 
 
 def list_save(filename, data):#filename为写入文件的路径，data为要写入数据列表.
