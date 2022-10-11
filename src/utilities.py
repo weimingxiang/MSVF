@@ -6,6 +6,7 @@ import os
 import numpy as np
 import torch
 import torchvision
+import pysam
 
 from bed2image import trans2img
 
