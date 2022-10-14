@@ -1,7 +1,31 @@
+import argparse
+import os
+import random
 import subprocess
 
+import numpy as np
+import pandas as pd
 import pysam
+import pytorch_lightning as pl
+import torch
+import torchvision
 from pytorch_lightning import seed_everything
+from pytorch_lightning.callbacks import ModelCheckpoint
+from pytorch_lightning.loggers import TensorBoardLogger
+
+import utilities as ut
+
+
+def parse_args():
+    """
+    :return:进行参数的解析
+    """
+    description = "you should add those parameter"
+    parser = argparse.ArgumentParser(description=description)
+    help = "The path of address"
+    parser.add_argument('--thread_num', help=help)
+    args = parser.parse_args()
+    return args
 
 
 # os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
@@ -27,17 +51,18 @@ for chromosome, chr_len in zip(chr_list, chr_length):
     # if not os.path.exists(data_dir + 'flag/' + chromosome + '.txt'):
     data_list.append((chromosome, chr_len))
 
+args = parse_args()
+thread_num = int(args.thread_num)
 
 for chr, len in data_list:
-    d = subprocess.getoutput(
-        "ps -aux | grep xwm | grep python | grep len | awk '{print $14}'").split()
-    if chr in d:
-        continue
-    # if os.path.exists(data_dir + 'flag/' + chr + '.txt'):
-    #     continue
-    print("python parallel_process_file.py --chr " + chr + " --len " + str(len))
+    num = len(subprocess.getoutput("ps -aux | grep process_file.py").split())
+    while num >= thread_num:
+        num = len(subprocess.getoutput(
+            "ps -aux | grep process_file.py").split())
+
+    print("python process_file.py --chr " + chr + " --len " + str(len))
     # subprocess.call("python create_process_file.py --chr " + chr + " --len " + str(len), shell = True)
     # fd = open(chr + ".txt")
-    subprocess.Popen("python parallel_process_file.py --chr " +
+    subprocess.Popen("python process_file.py --chr " +
                      chr + " --len " + str(len), shell=True)
     # subprocess.Popen("python par.py --chr " + chr + " --len " + str(len), shell=True)

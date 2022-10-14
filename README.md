@@ -90,7 +90,8 @@ tar -xzvf NA12878.sorted.vcf.gz
 cd ../src
 python vcf_data_process.py
 python bam2depth.py
-python parallel_process_file.py
+python parallel_process_file.py --thread_num thread_num  # (python parallel_process_file.py --thread_num 16)
+python process_file_check.py
 python data_spread.py
 python train.py
 ```
