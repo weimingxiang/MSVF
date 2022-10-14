@@ -1,5 +1,5 @@
+from cProfile import label
 import utilities as ut
-from pudb import set_trace
 import pandas as pd
 import random
 import numpy as np
@@ -30,8 +30,8 @@ os.environ["CUDA_VISIBLE_DEVICES"] = num_cuda
 seed_everything(2022)
 
 data_dir = "../data/"
-# data_dir = "/home/xwm/DeepSVFilter/datasets/NA12878_PacBio_MtSinai/"
-
+bs = 14
+my_label = "resnet50"
 
 bam_path = data_dir + "sorted_final_merged.bam"
 
@@ -42,7 +42,7 @@ del_vcf_filename = data_dir + "delete_result_data.csv.vcf"
 all_enforcement_refresh = 0
 position_enforcement_refresh = 0
 img_enforcement_refresh = 0
-sign_enforcement_refresh = 0 # attention
+sign_enforcement_refresh = 0  # attention
 cigar_enforcement_refresh = 0
 
 # get chr list
@@ -61,17 +61,21 @@ for chromosome, chr_len in zip(chr_list, chr_length):
     print("======= deal " + chromosome + " =======")
 
     print("position start")
-    if os.path.exists(data_dir + 'position/' + chromosome + '/insert' + '.pt') and not position_enforcement_refresh:
+    if os.path.exists(data_dir + 'position/' + chromosome + '/negative' + '.pt') and not position_enforcement_refresh:
         print("loading")
-        ins_position = torch.load(data_dir + 'position/' + chromosome + '/insert' + '.pt')
-        del_position = torch.load(data_dir + 'position/' + chromosome + '/delete' + '.pt')
-        n_position = torch.load(data_dir + 'position/' + chromosome + '/negative' + '.pt')
+        ins_position = torch.load(
+            data_dir + 'position/' + chromosome + '/insert' + '.pt')
+        del_position = torch.load(
+            data_dir + 'position/' + chromosome + '/delete' + '.pt')
+        n_position = torch.load(
+            data_dir + 'position/' + chromosome + '/negative' + '.pt')
     else:
         ins_position = []
         del_position = []
         n_position = []
         # insert
-        insert_result_data = pd.read_csv(ins_vcf_filename, sep = "\t", index_col=0)
+        insert_result_data = pd.read_csv(
+            ins_vcf_filename, sep="\t", index_col=0)
         insert_chromosome = insert_result_data[insert_result_data["CHROM"] == chromosome]
         row_pos = []
         for index, row in insert_chromosome.iterrows():
@@ -95,7 +99,8 @@ for chromosome, chr_len in zip(chr_list, chr_length):
             ins_position.append([begin, end])
 
         # delete
-        delete_result_data = pd.read_csv(del_vcf_filename, sep = "\t", index_col=0)
+        delete_result_data = pd.read_csv(
+            del_vcf_filename, sep="\t", index_col=0)
         delete_chromosome = delete_result_data[delete_result_data["CHROM"] == chromosome]
         row_pos = []
         row_end = []
@@ -120,7 +125,7 @@ for chromosome, chr_len in zip(chr_list, chr_length):
 
             del_position.append([begin, end])
 
-            #negative
+            # negative
             del_length = end - begin
 
             for _ in range(2):
@@ -137,9 +142,7 @@ for chromosome, chr_len in zip(chr_list, chr_length):
                     if end >= chr_len:
                         end = chr_len - 1
 
-
                 n_position.append([begin, end])
-
 
         save_path = data_dir + 'position/' + chromosome
         ut.mymkdir(save_path)
@@ -150,11 +153,14 @@ for chromosome, chr_len in zip(chr_list, chr_length):
 
     # img/positive_cigar_img
     print("cigar start")
-    if os.path.exists(data_dir + 'image/' + chromosome + '/positive_cigar_new_img' + '.pt') and not cigar_enforcement_refresh:
+    if os.path.exists(data_dir + 'image/' + chromosome + '/negative_cigar_new_img' + '.pt') and not cigar_enforcement_refresh:
         print("loading")
-        ins_cigar_img = torch.load(data_dir + 'image/' + chromosome + '/ins_cigar_new_img' + '.pt')
-        del_cigar_img = torch.load(data_dir + 'image/' + chromosome + '/del_cigar_new_img' + '.pt')
-        negative_cigar_img = torch.load(data_dir + 'image/' + chromosome + '/negative_cigar_new_img' + '.pt')
+        ins_cigar_img = torch.load(
+            data_dir + 'image/' + chromosome + '/ins_cigar_new_img' + '.pt')
+        del_cigar_img = torch.load(
+            data_dir + 'image/' + chromosome + '/del_cigar_new_img' + '.pt')
+        negative_cigar_img = torch.load(
+            data_dir + 'image/' + chromosome + '/negative_cigar_new_img' + '.pt')
         # 由于未刷新数据增加的代码
         # all_p_img0 = positive_cigar_img[:, 0, :, :] + positive_cigar_img[:, 5, :, :]
         # all_n_img0 = negative_cigar_img[:, 0, :, :] + negative_cigar_img[:, 5, :, :]
@@ -170,13 +176,14 @@ for chromosome, chr_len in zip(chr_list, chr_length):
         del_cigar_img = torch.empty(len(del_position), 4, hight, hight)
         negative_cigar_img = torch.empty(len(n_position), 4, hight, hight)
         for i, b_e in enumerate(ins_position):
-            #f positive_cigar_img = torch.cat((positive_cigar_img, ut.cigar_img(chromosome_cigar, chromosome_cigar_len, refer_q_table[begin], refer_q_table[end]).unsqueeze(0)), 0)
+            # f positive_cigar_img = torch.cat((positive_cigar_img, ut.cigar_img(chromosome_cigar, chromosome_cigar_len, refer_q_table[begin], refer_q_table[end]).unsqueeze(0)), 0)
             zoom = 1
             fail = 1
             while fail:
                 try:
                     fail = 0
-                    ins_cigar_img[i] = ut.cigar_new_img_single_optimal(bam_path, chromosome, b_e[0], b_e[1], zoom)
+                    ins_cigar_img[i] = ut.cigar_new_img_single_optimal(
+                        bam_path, chromosome, b_e[0], b_e[1], zoom)
                 except Exception as e:
                     fail = 1
                     zoom += 1
@@ -193,19 +200,18 @@ for chromosome, chr_len in zip(chr_list, chr_length):
             #             print(e)
             #             print("Exception cigar_img_single_optimal_time3sapce")
             #             positive_cigar_img[i] = ut.cigar_img_single_optimal_time6sapce(sam_file, chromosome, b_e[0], b_e[1])
-
-
 
             print("===== finish(ins_cigar_img) " + chromosome + " " + str(i))
 
         for i, b_e in enumerate(del_position):
-            #f positive_cigar_img = torch.cat((positive_cigar_img, ut.cigar_img(chromosome_cigar, chromosome_cigar_len, refer_q_table[begin], refer_q_table[end]).unsqueeze(0)), 0)
+            # f positive_cigar_img = torch.cat((positive_cigar_img, ut.cigar_img(chromosome_cigar, chromosome_cigar_len, refer_q_table[begin], refer_q_table[end]).unsqueeze(0)), 0)
             zoom = 1
             fail = 1
             while fail:
                 try:
                     fail = 0
-                    del_cigar_img[i] = ut.cigar_new_img_single_optimal(bam_path, chromosome, b_e[0], b_e[1], zoom)
+                    del_cigar_img[i] = ut.cigar_new_img_single_optimal(
+                        bam_path, chromosome, b_e[0], b_e[1], zoom)
                 except Exception as e:
                     fail = 1
                     zoom += 1
@@ -223,19 +229,17 @@ for chromosome, chr_len in zip(chr_list, chr_length):
             #             print("Exception cigar_img_single_optimal_time3sapce")
             #             positive_cigar_img[i] = ut.cigar_img_single_optimal_time6sapce(sam_file, chromosome, b_e[0], b_e[1])
 
-
-
             print("===== finish(del_position) " + chromosome + " " + str(i))
 
-
         for i, b_e in enumerate(n_position):
-            #f negative_cigar_img = torch.cat((negative_cigar_img, ut.cigar_img(chromosome_cigar, chromosome_cigar_len, refer_q_table[begin], refer_q_table[end]).unsqueeze(0)), 0)
+            # f negative_cigar_img = torch.cat((negative_cigar_img, ut.cigar_img(chromosome_cigar, chromosome_cigar_len, refer_q_table[begin], refer_q_table[end]).unsqueeze(0)), 0)
             zoom = 1
             fail = 1
             while fail:
                 try:
                     fail = 0
-                    negative_cigar_img[i] = ut.cigar_new_img_single_optimal(bam_path, chromosome, b_e[0], b_e[1], zoom)
+                    negative_cigar_img[i] = ut.cigar_new_img_single_optimal(
+                        bam_path, chromosome, b_e[0], b_e[1], zoom)
                 except Exception as e:
                     fail = 1
                     zoom += 1
@@ -254,7 +258,6 @@ for chromosome, chr_len in zip(chr_list, chr_length):
                 #         print("Exception cigar_img_single_optimal_time3sapce")
                 #         negative_cigar_img[i] = ut.cigar_img_single_optimal_time6sapce(sam_file, chromosome, b_e[0], b_e[1])
 
-
             print("===== finish(n_position) " + chromosome + " " + str(i))
         # sam_file.close()
 
@@ -262,13 +265,15 @@ for chromosome, chr_len in zip(chr_list, chr_length):
         ut.mymkdir(save_path)
         torch.save(ins_cigar_img, save_path + '/ins_cigar_new_img' + '.pt')
         torch.save(del_cigar_img, save_path + '/del_cigar_new_img' + '.pt')
-        torch.save(negative_cigar_img, save_path + '/negative_cigar_new_img' + '.pt')
+        torch.save(negative_cigar_img, save_path +
+                   '/negative_cigar_new_img' + '.pt')
 
     print("cigar end")
 
     all_ins_cigar_img = torch.cat((all_ins_cigar_img, ins_cigar_img), 0)
     all_del_cigar_img = torch.cat((all_del_cigar_img, del_cigar_img), 0)
-    all_negative_cigar_img = torch.cat((all_negative_cigar_img, negative_cigar_img), 0)
+    all_negative_cigar_img = torch.cat(
+        (all_negative_cigar_img, negative_cigar_img), 0)
 
 
 torch.save(all_ins_cigar_img, data_dir + '/all_ins_img' + '.pt')
@@ -276,7 +281,8 @@ torch.save(all_del_cigar_img, data_dir + '/all_del_img' + '.pt')
 torch.save(all_negative_cigar_img, data_dir + '/all_n_img' + '.pt')
 
 
-logger = TensorBoardLogger(os.path.join(data_dir, "channel_predict"), name=my_label)
+logger = TensorBoardLogger(os.path.join(
+    data_dir, "channel_predict"), name=my_label)
 
 checkpoint_callback = ModelCheckpoint(
     dirpath="./checkpoints_predict/" + my_label,
@@ -295,10 +301,11 @@ checkpoint_callback = ModelCheckpoint(
     every_n_val_epochs=None
 )
 
+
 def main_train():
     config = {
         "lr": 7.1873e-06,
-        "batch_size": 14, # 14,
+        "batch_size": 14,  # 14,
         "beta1": 0.9,
         "beta2": 0.999,
         'weight_decay': 0.0011615,
@@ -312,7 +319,6 @@ def main_train():
     #     'weight_decay': 0.0049974,
     #     "classfication_dim_stride": 201,
     # }
-
 
     model = IDENet(data_dir, config)
 
@@ -356,8 +362,9 @@ def train_tune(config, checkpoint_dir=None, num_epochs=200, num_gpus=1):
     )
     trainer.fit(model)
 
+
 class MyStopper(tune.Stopper):
-    def __init__(self, metric, value, epoch = 1):
+    def __init__(self, metric, value, epoch=1):
         self._metric = metric
         self._value = value
         self._epoch = epoch
@@ -371,12 +378,10 @@ class MyStopper(tune.Stopper):
         # else:
         #     self._iterations = 0
 
-
         # and then call the method that re-executes
         # the checks, including the iterations.
         # return self._iterations >= self._patience
         return (result["training_iteration"] > self._epoch) and (result[self._metric] < self._value)
-
 
     def stop_all(self):
         """Return whether to stop and prevent trials from starting."""
@@ -384,6 +389,7 @@ class MyStopper(tune.Stopper):
 
 # def stopper(trial_id, result):
 #     return result["validation_mean"] <= 0.343
+
 
 def gan_tune(num_samples=-1, num_epochs=30, gpus_per_trial=1):
     # config = {
@@ -411,11 +417,12 @@ def gan_tune(num_samples=-1, num_epochs=30, gpus_per_trial=1):
         max_t=num_epochs,
         grace_period=1,
         reduction_factor=2,
-        )
+    )
 
     reporter = CLIReporter(
-        metric_columns=['train_loss', "train_mean", 'validation_loss', "validation_mean"]
-        )
+        metric_columns=['train_loss', "train_mean",
+                        'validation_loss', "validation_mean"]
+    )
 
     analysis = tune.run(
         tune.with_parameters(
@@ -436,11 +443,10 @@ def gan_tune(num_samples=-1, num_epochs=30, gpus_per_trial=1):
         progress_reporter=reporter,
         resume="AUTO",
         search_alg=re_search_alg,
-        max_failures = -1,
+        max_failures=-1,
         # reuse_actors = True,
         # server_port = 60060,
         name="tune" + num_cuda)
-
 
 
 # main_train()

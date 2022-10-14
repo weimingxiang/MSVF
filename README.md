@@ -34,15 +34,15 @@ git clone git@github.com:weimingxiang/MSVF.git
 Download all dataset from https://cowtransfer.com/s/cddf954624b247. (You can also choose the sample data in the code)
 
 ## Model that have been trained
-| File name  | URL |
-| ------------- | ------------- |
-| mnasnet1_0.ckpt  | https://github.com/weimingxiang/MSVF/releases/download/model/mnasnet1_0.ckpt  |
-| mobilenet_v2.ckpt  | https://github.com/weimingxiang/MSVF/releases/download/model/mobilenet_v2.ckpt  |
-| shufflenet_v2_x1_0.ckpt  | https://github.com/weimingxiang/MSVF/releases/download/model/shufflenet_v2_x1_0.ckpt  |
-| resnet34.ckpt  | https://github.com/weimingxiang/MSVF/releases/download/model/resnet34.ckpt  |
-| resnet50.ckpt  | https://github.com/weimingxiang/MSVF/releases/download/model/resnet50.ckpt  |
-| resnet101.ckpt  | https://github.com/weimingxiang/MSVF/releases/download/model/resnet101.ckpt  |
-| resnet152.ckpt  | https://github.com/weimingxiang/MSVF/releases/download/model/resnet152.ckpt  |
+| File name               | URL                                                                                  |
+| ----------------------- | ------------------------------------------------------------------------------------ |
+| mnasnet1_0.ckpt         | https://github.com/weimingxiang/MSVF/releases/download/model/mnasnet1_0.ckpt         |
+| mobilenet_v2.ckpt       | https://github.com/weimingxiang/MSVF/releases/download/model/mobilenet_v2.ckpt       |
+| shufflenet_v2_x1_0.ckpt | https://github.com/weimingxiang/MSVF/releases/download/model/shufflenet_v2_x1_0.ckpt |
+| resnet34.ckpt           | https://github.com/weimingxiang/MSVF/releases/download/model/resnet34.ckpt           |
+| resnet50.ckpt           | https://github.com/weimingxiang/MSVF/releases/download/model/resnet50.ckpt           |
+| resnet101.ckpt          | https://github.com/weimingxiang/MSVF/releases/download/model/resnet101.ckpt          |
+| resnet152.ckpt          | https://github.com/weimingxiang/MSVF/releases/download/model/resnet152.ckpt          |
 
 ## Add channels
 ```shell
@@ -90,6 +90,7 @@ tar -xzvf NA12878.sorted.vcf.gz
 cd ../src
 python vcf_data_process.py
 python bam2depth.py
+python parallel_process_file.py
 python train.py
 ```
 
