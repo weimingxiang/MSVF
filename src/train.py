@@ -429,7 +429,7 @@ def gan_tune(num_samples=-1, num_epochs=30, gpus_per_trial=1):
             train_tune,
             num_epochs=num_epochs,
         ),
-        local_dir="/home/xwm/DeepSVFilter/code/",
+        local_dir="~/MSVF/code/",
         resources_per_trial={
             "cpu": 5,
             "gpu": 1,
