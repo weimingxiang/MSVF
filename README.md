@@ -91,6 +91,7 @@ cd ../src
 python vcf_data_process.py
 python bam2depth.py
 python parallel_process_file.py
+python data_spread.py
 python train.py
 ```
 
