@@ -24,8 +24,8 @@ from ray.tune.integration.pytorch_lightning import TuneReportCallback, \
 import list2img
 from hyperopt import hp
 
-num_cuda = "2"
-os.environ["CUDA_VISIBLE_DEVICES"] = num_cuda
+# num_cuda = "0"
+# os.environ["CUDA_VISIBLE_DEVICES"] = num_cuda
 seed_everything(2022)
 
 data_dir = "../data/"
@@ -210,7 +210,7 @@ def gan_tune(num_samples=-1, num_epochs=30, gpus_per_trial=1):
         search_alg=re_search_alg,
         max_failures=-1,
         # reuse_actors = True,
-        name="tune" + num_cuda)
+        name="tune")
 
 
 # main_train()
