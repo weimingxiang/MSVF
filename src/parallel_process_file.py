@@ -54,15 +54,15 @@ for chromosome, chr_len in zip(chr_list, chr_length):
 args = parse_args()
 thread_num = int(args.thread_num)
 
-for chr, len in data_list:
+for chr, leng in data_list:
     num = len(subprocess.getoutput("ps -aux | grep process_file.py").split())
     while num >= thread_num:
         num = len(subprocess.getoutput(
             "ps -aux | grep process_file.py").split())
 
-    print("python process_file.py --chr " + chr + " --len " + str(len))
+    print("python process_file.py --chr " + chr + " --len " + str(leng))
     # subprocess.call("python create_process_file.py --chr " + chr + " --len " + str(len), shell = True)
     # fd = open(chr + ".txt")
     subprocess.Popen("python process_file.py --chr " +
-                     chr + " --len " + str(len), shell=True)
+                     chr + " --len " + str(leng), shell=True)
     # subprocess.Popen("python par.py --chr " + chr + " --len " + str(len), shell=True)
