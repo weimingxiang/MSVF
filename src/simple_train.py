@@ -1,25 +1,28 @@
-import utilities as ut
-import pandas as pd
+import os
 import random
+import sys
+import time
+from multiprocessing import Pool, cpu_count
+
 import numpy as np
+import pandas as pd
+import pytorch_lightning as pl
+import ray
 import torch
 import torch.nn as nn
-from pytorch_lightning.loggers import TensorBoardLogger
-import os
-from net import IDENet
-import pytorch_lightning as pl
 from pytorch_lightning import seed_everything
 from pytorch_lightning.callbacks import ModelCheckpoint
-from multiprocessing import Pool, cpu_count
-import time
-import ray
+from pytorch_lightning.loggers import TensorBoardLogger
 from ray import tune
 from ray.tune import CLIReporter
-from ray.tune.suggest import Repeater
+from ray.tune.integration.pytorch_lightning import (
+    TuneReportCallback, TuneReportCheckpointCallback)
 from ray.tune.schedulers import ASHAScheduler, PopulationBasedTraining
+from ray.tune.suggest import Repeater
 from ray.tune.suggest.hyperopt import HyperOptSearch
-from ray.tune.integration.pytorch_lightning import TuneReportCallback, \
-    TuneReportCheckpointCallback
+
+import utilities as ut
+from net import IDENet
 
 model_name = "resnet50"
 os.environ["CUDA_VISIBLE_DEVICES"] = "3"

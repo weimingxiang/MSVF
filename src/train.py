@@ -24,12 +24,12 @@ from ray.tune.integration.pytorch_lightning import TuneReportCallback, \
 import list2img
 from hyperopt import hp
 
-num_cuda = "0"
+num_cuda = "2"
 os.environ["CUDA_VISIBLE_DEVICES"] = num_cuda
 seed_everything(2022)
 
 data_dir = "../data/"
-bs = 14
+bs = 64
 my_label = "resnet50"
 
 bam_path = data_dir + "sorted_final_merged.bam"
@@ -157,23 +157,23 @@ class MyStopper(tune.Stopper):
 
 
 def gan_tune(num_samples=-1, num_epochs=30, gpus_per_trial=1):
-    # config = {
-    #     "lr": tune.loguniform(1e-7, 1e-5),
-    #     "batch_size": 14,
-    #     "beta1": 0.9, # tune.uniform(0.895, 0.905),
-    #     "beta2": 0.999, # tune.uniform(0.9989, 0.9991),
-    #     'weight_decay': tune.uniform(0, 0.01),
-    #     # "conv2d_dim_stride": tune.lograndint(1, 6),
-    #     # "classfication_dim_stride": tune.lograndint(20, 700),
-    # }
     config = {
-        "batch_size": bs,
-        "beta1": 0.9,
-        "beta2": 0.999,
-        "lr": 7.187267009530772e-06,
-        "weight_decay": 0.0011614665567890423
-        # "classfication_dim_stride": 20, # no use
+        "lr": tune.loguniform(1e-8, 1e-4),
+        "batch_size": 64,
+        "beta1": 0.9,  # tune.uniform(0.895, 0.905),
+        "beta2": 0.999,  # tune.uniform(0.9989, 0.9991),
+        'weight_decay': tune.uniform(0, 0.01),
+        'model': "resnet50"
+
     }
+    # config = {
+    #     "batch_size": 119,
+    #     "beta1": 0.9,
+    #     "beta2": 0.999,
+    #     "lr": 7.187267009530772e-06,
+    #     "weight_decay": 0.0011614665567890423
+    #     # "classfication_dim_stride": 20, # no use
+    # }
 
     bayesopt = HyperOptSearch(config, metric="validation_mean", mode="max")
     re_search_alg = Repeater(bayesopt, repeat=1)
@@ -194,23 +194,22 @@ def gan_tune(num_samples=-1, num_epochs=30, gpus_per_trial=1):
             train_tune,
             num_epochs=num_epochs,
         ),
-        local_dir="~/MSVF/code/",
+        local_dir=data_dir,
         resources_per_trial={
-            "cpu": 5,
+            "cpu": 4,
             "gpu": 1,
         },
         # stop = MyStopper("validation_mean", value = 0.343, epoch = 1),
-        config=config,
+        # config=config,
         num_samples=num_samples,
         metric='validation_mean',
         mode='max',
         scheduler=scheduler,
         progress_reporter=reporter,
-        resume="AUTO",
+        resume=False,
         search_alg=re_search_alg,
         max_failures=-1,
         # reuse_actors = True,
-        # server_port = 60060,
         name="tune" + num_cuda)
 
 
