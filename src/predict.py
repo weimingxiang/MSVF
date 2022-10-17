@@ -32,7 +32,7 @@ config = {
 }
 
 
-model = IDENet.load_from_checkpoint(root_dir + "models/" + config['model'] + ".ckpt", path=root_dir, config=config)
+model = IDENet.load_from_checkpoint(root_dir + "models/" + config['model'] + ".ckpt", path=root_dir + "data/", config=config)
 
 trainer = pl.Trainer(gpus=1)
 
