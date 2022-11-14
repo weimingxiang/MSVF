@@ -55,11 +55,11 @@ args = parse_args()
 thread_num = int(args.thread_num)
 
 for chr, length in data_list:
-    num = len(subprocess.getoutput("ps -aux | grep process_file.py").split())
-    while num >= thread_num:
+    num = len(subprocess.getoutput("ps -aux | grep process_file.py").split('\n'))
+    while num > thread_num:
         num = len(subprocess.getoutput(
-            "ps -aux | grep process_file.py").split())
-
+            "ps -aux | grep process_file.py").split('\n'))
+        # print(num)
     print("python process_file.py --chr " + chr + " --len " + str(length))
     # subprocess.call("python create_process_file.py --chr " + chr + " --len " + str(len), shell = True)
     # fd = open(chr + ".txt")
