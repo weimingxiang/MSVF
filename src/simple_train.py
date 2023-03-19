@@ -30,7 +30,7 @@ my_label = "4channel_predict" + '_' + model_name
 seed_everything(2022)
 
 # data_dir = "../datasets/NA12878_PacBio_MtSinai/"
-data_dir = "../data"
+data_dir = "../data/"
 
 if len(sys.argv) < 2:
     print("usage error!")
